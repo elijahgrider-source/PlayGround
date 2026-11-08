@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#f6f1e4" />
+  <link rel="icon" href="data:," />
+  <title>Little Acre — a cozy farm sim</title>
+  <link rel="preload" href="assets/fonts/Fraunces-600.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="preload" href="assets/fonts/Nunito-400.ttf" as="font" type="font/ttf" crossorigin />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Little Acre home">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 42 42"><path d="M21 34V15M21 22c-9 0-13-5-13-11 8 0 13 4 13 11Zm0-4c0-8 5-13 13-13 0 8-4 13-13 13Z"/><path class="sun" d="M21 38c9 0 15-2 17-6-4 1-8 1-12 0"/></svg></span>
+        <span class="brand-copy"><strong>little acre</strong><small>YOUR LITTLE PATCH OF PEACE</small></span>
+      </a>
+      <div class="top-status">
+        <div class="day-pill"><span class="sun-icon">☀</span><span id="seasonDay">Spring · Day 1</span></div>
+        <div class="clock-pill"><span class="clock-icon">◷</span><span id="timeLabel">6:00 AM</span></div>
+        <div class="weather-pill"><span id="weatherIcon">☀</span><span id="weatherLabel">Clear skies</span></div>
+        <div class="energy-pill"><span>✿</span><div><small>STAMINA</small><i><b id="energyFill"></b></i></div></div>
+      </div>
+      <div class="wallet"><span class="coin-icon">✦</span><div><small>YOUR COINS</small><strong id="coins">40</strong></div><button id="marketButton" class="market-shortcut" aria-label="Open market">↗</button></div>
+    </header>
+
+    <section class="game-layout" aria-label="Farm game">
+      <div class="farm-column">
+        <div class="scene-wrap">
+          <canvas id="farm" width="1040" height="720" aria-label="Your farm. Click a tile to use your selected tool or move." tabindex="0"></canvas>
+          <div class="scene-label"><span class="pin">⌖</span> WILLOWBROOK FARM</div>
+          <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          <div class="canvas-help"><span class="keycap">WASD</span> move <i>·</i> <span class="keycap">E</span> use tool <i>·</i> click a tile</div>
+        </div>
+        <div class="farm-controls">
+          <div class="tools" role="toolbar" aria-label="Farm tools">
+            <button class="tool active" data-tool="hoe" aria-label="Select hoe" title="Hoe (1)"><span class="tool-art hoe-art">⌁</span><span class="tool-info"><b>Hoe</b><small>till soil <kbd>1</kbd></small></span><span class="tool-count">∞</span></button>
+            <button class="tool" data-tool="seed" aria-label="Select seeds" title="Seeds (2)"><span class="tool-art seed-art">♧</span><span class="tool-info"><b>Plant</b><small>carrot seeds <kbd>2</kbd></small></span><span class="tool-count" id="seedCount">8</span></button>
+            <button class="tool" data-tool="water" aria-label="Select watering can" title="Water (3)"><span class="tool-art water-art">◉</span><span class="tool-info"><b>Water</b><small>crops <kbd>3</kbd></small></span><span class="tool-count">∞</span></button>
+            <button class="tool" data-tool="harvest" aria-label="Select harvest basket" title="Harvest (4)"><span class="tool-art harvest-art">♨</span><span class="tool-info"><b>Harvest</b><small>ripe crops <kbd>4</kbd></small><span class="new-badge" id="ripeBadge" hidden>RIPE!</span></span><span class="tool-count" id="harvestCount">0</span></button>
+          </div>
+          <button id="sleepButton" class="sleep-button"><span class="moon">☾</span><span><b>End the day</b><small>sleep until morning</small></span><kbd>N</kbd></button>
+        </div>
+      </div>
+
+      <aside class="side-panel">
+        <section class="welcome-card">
+          <div class="welcome-top"><span class="eyebrow">A FRESH START</span><span class="leaf-stamp">✿</span></div>
+          <h1>Good morning,<br /><em>farmer.</em></h1>
+          <p>There's room for something lovely to grow here.</p>
+          <div class="quest-progress"><div class="quest-line"><span>FIRST HARVEST</span><b id="questCount">0 / 4</b></div><div class="progress-track"><i id="questProgress"></i></div></div>
+        </section>
+
+        <section class="inventory-card">
+          <div class="section-heading"><h2>Your basket</h2><span class="inventory-cap">TODAY</span></div>
+          <div class="inventory-row"><span class="item-icon carrot-icon">♧</span><span class="item-name">Carrot seeds</span><b id="inventorySeeds">8</b><small>seeds</small></div>
+          <div class="inventory-row"><span class="item-icon produce-icon">◉</span><span class="item-name">Fresh carrots</span><b id="inventoryCarrots">0</b><small>picked</small></div>
+          <button id="sellButton" class="sell-button"><span>Sell your harvest</span><span id="sellValue">0 coins&nbsp; ↗</span></button>
+          <p class="market-note"><span>✦</span> Best prices at the market stall.</p>
+        </section>
+
+        <section class="field-note">
+          <div class="note-icon">✎</div><div><h3>Field notes</h3><p id="fieldTip">Till a patch of earth, then plant a carrot seed. Water it each day to help it grow.</p></div>
+        </section>
+        <div class="day-footer"><span class="tiny-sun">☼</span><span>Make yourself at home.</span><span class="footer-heart">♥</span></div>
+      </aside>
+    </section>
+
+    <div class="touch-controls" aria-label="Touch movement controls">
+      <button data-move="up" aria-label="Move up">↑</button><div><button data-move="left" aria-label="Move left">←</button><button data-move="down" aria-label="Move down">↓</button><button data-move="right" aria-label="Move right">→</button></div><button id="touchUse" class="touch-use">USE</button>
+    </div>
+
+    <dialog id="marketDialog" class="market-dialog">
+      <button class="dialog-close" id="closeMarket" aria-label="Close market">×</button>
+      <div class="market-illustration">🥕</div><span class="eyebrow">MRS. MARIGOLD'S STALL</span>
+      <h2>Good things grow here.</h2><p class="dialog-copy">A little seed goes a long way. Stock up, then sell whatever you've picked.</p>
+      <div class="market-deal"><span class="deal-icon">♧</span><div><b>Carrot seed packet</b><small>Grow in 3 good days · Sell for 18 coins</small></div><strong>8 <small>coins</small></strong></div>
+      <button id="buySeeds" class="buy-button">Buy 4 seeds <span>32 ✦</span></button>
+      <button id="dialogSell" class="dialog-sell">Sell all carrots <span id="dialogSellValue">0 ✦</span></button>
+      <p class="market-flavor">“Fresh from the garden is always best.”</p>
+    </dialog>
+
+    <div class="screen-grain" aria-hidden="true"></div>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
